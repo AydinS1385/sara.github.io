@@ -76,7 +76,7 @@
       border-radius: 10px;
       border: none;
       margin-top: 15px;
-      font-size: 18px;
+      font-size: 15px;
       display: none;
     }
 
@@ -127,49 +127,76 @@
       آیدین
     </div>
 
-    <div class="radio-group">
-      <div class="radio-option">
-        <input type="radio" id="accept" name="response" value="accept" onchange="handleResponse()">
-        <label for="accept">قبول می‌کنم</label>
+    <form id="inviteForm">
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" id="accept" name="response" value="قبول می‌کنم" onchange="handleResponse()" required>
+          <label for="accept">قبول می‌کنم</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="decline" name="response" value="متأسفم" onchange="handleResponse()">
+          <label for="decline">متأسفم</label>
+        </div>
       </div>
-      <div class="radio-option">
-        <input type="radio" id="decline" name="response" value="decline" onchange="handleResponse()">
-        <label for="decline">متأسفم</label>
-      </div>
-    </div>
+    
+      <div id="declineMessage">👑 ملکه سارا، تو باید قبول کنی! 🙂</div>
+    
+      <textarea id="commentBox" name="message" placeholder="خواهشمند است نظرات، خواسته‌ها یا پیشنهادات خود را اینجا وارد کنید..."></textarea>
+    
+      <button type="submit">ارسال</button>
+    
+      <div id="successMessage" style="display:none; color:lightgreen; text-align:center; margin-top:15px;">✅ پیام با موفقیت ارسال شد</div>
+    </form>
 
-    <div id="declineMessage">👑 ملکه سارا، تو باید قبول کنی! 🙂</div>
+   <script>
+  function handleResponse() {
+    const accept = document.getElementById('accept').checked;
+    const commentBox = document.getElementById('commentBox');
+    const declineMessage = document.getElementById('declineMessage');
 
-    <textarea id="commentBox" placeholder="خواهشمند است نظرات، خواسته‌ها یا پیشنهادات خود را اینجا وارد کنید..."></textarea>
+    if (accept) {
+      commentBox.style.display = "block";
+      declineMessage.style.display = "none";
+    } else {
+      commentBox.style.display = "none";
+      declineMessage.style.display = "block";
+    }
+  }
 
-    <button onclick="submitResponse()">ارسال</button>
+  document.getElementById("inviteForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch("https://formspree.io/f/mqaqokpk", {
+      method: "POST",
+      headers: {
+        Accept: "application/json"
+      },
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        form.reset();
+        document.getElementById("successMessage").style.display = "block";
+        document.getElementById("commentBox").style.display = "none";
+      } else {
+        alert("ارسال با خطا مواجه شد. دوباره امتحان کنید.");
+      }
+    })
+    .catch(error => {
+      alert("خطای شبکه. لطفاً اینترنت را بررسی کنید.");
+    });
+  });
+</script>
+
+
 
     <div class="footer">طراحی شده با احترام برای ملکه سارا</div>
   </div>
 
-  <script>
-    function handleResponse() {
-      const accept = document.getElementById('accept').checked;
-      const commentBox = document.getElementById('commentBox');
-      const declineMessage = document.getElementById('declineMessage');
-
-      if (accept) {
-        commentBox.style.display = "block";
-        declineMessage.style.display = "none";
-      } else {
-        commentBox.style.display = "none";
-        declineMessage.style.display = "block";
-      }
-    }
-
-    function submitResponse() {
-      const accept = document.getElementById('accept').checked;
-      if (accept) {
-        alert("پاسخ شما با موفقیت ثبت شد. منتظر حضور گرمتان هستم 🌟");
-      } else {
-        alert("منتظریم تا ملکه تصمیم بگیرد...");
-      }
-    }
-  </script>
+  
+  
 </body>
 </html>
